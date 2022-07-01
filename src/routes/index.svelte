@@ -1,31 +1,24 @@
 <script>
+  import PokeList from '../components/pokemons-list.svelte';
   import { getPokemons } from './../services/pokemons.js';
 
   let page = 0;
   let pokemonsFetch = getPokemons(page);
-
-  const nextPage = () => {
-    pokemonsFetch = getPokemons(++page);
-  };
-  const previousPage = () => {
-    if (page === 0) return;
-    pokemonsFetch = getPokemons(--page);
-  };
 </script>
 
-<!-- navbar -->
-<nav class="navbar">
-  <ul class="navbar__list">
-    <li class="navbar__item">
-      <a href="/" class="navbar__link">Inicio</a>
-    </li>
-    <li class="navbar__item">
-      <a href="/" class="navbar__link">Pokemons</a>
-    </li>
-  </ul>
-</nav>
+<header>
+  <nav class="navbar">
+    <ul class="navbar__list">
+      <li class="navbar__item">
+        <a href="/" class="navbar__link">Inicio</a>
+      </li>
+      <li class="navbar__item">
+        <a href="/" class="navbar__link">Pokemons</a>
+      </li>
+    </ul>
+  </nav>
+</header>
 
-<!-- main -->
 <main>
   <!-- hero -->
   <section class="hero">
@@ -37,29 +30,18 @@
     <a href="#pokemons" class="heto__button">Ver Pokemons</a>
   </section>
 
-  <!-- pokemons list -->
+  <!-- pokemons -->
   <section class="pokemons">
-    <ul class="pokemons__list">
-      {#await pokemonsFetch}
-        <h3>cargando..</h3>
-      {:then pokemonsList}
-        {#each pokemonsList as { id, name }}
-          <div class="pokemon">
-            <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`}
-              alt={name}
-              class="pokemon__image"
-              loading="lazy"
-            />
-            <h3 class="pokemon__title"><span>{id}.</span>{name}</h3>
-            <a href="/[id]" class="pokemon__button">Ver más</a>
-          </div>
-        {/each}
-      {/await}
-    </ul>
-    <button on:click={previousPage}> Pagina Anterior </button>
-    <p>{page}</p>
-    <button on:click={nextPage}> Siguiente Pagina </button>
+    {#await pokemonsFetch}
+      <h3>cargando..</h3>
+    {:then pokemons}
+      <PokeList {pokemons} />
+    {/await}
+    <div>
+      <button on:click={() => (pokemonsFetch = getPokemons(--page))}> Pagina Anterior </button>
+      <span>{page}</span>
+      <button on:click={() => (pokemonsFetch = getPokemons(++page))}> Siguiente Pagina </button>
+    </div>
   </section>
 </main>
 
@@ -71,12 +53,4 @@
   }
 
   /* hero */
-
-  /* pokemons list */
-  .pokemons__list {
-    display: flex;
-    flex-flow: row;
-    flex-wrap: wrap;
-    gap: 2em;
-  }
 </style>
